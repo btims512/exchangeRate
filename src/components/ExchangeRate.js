@@ -1,17 +1,38 @@
 import { useState, useCallback, useEffect } from "react";
+import { Container, Typography, Box } from "@material-ui/core";
 import { RateTable } from "./RateTable";
 import { CurrencyCodePicker } from "./CurrencyCodePicker";
 import { AmountField } from "./AmountField";
 import { getExchangeRates } from "../api";
+import { useStyles } from "../styles";
 
-const supportedCurrencies = ["USD", "EUR", "JPY", "CAD", "GBP", "MXN"];
+const supportedCurrencies = [
+  "USD",
+  "EUR",
+  "JPY",
+  "GBP",
+  "AUD",
+  "CAD",
+  "CHF",
+  "CNY",
+  "SEK",
+  "NZD",
+  // Add more currency codes here
+  "HKD",
+  "SGD",
+  "INR",
+  "MXN",
+  "PHP",
+  "THB",
+];
 
 export function ExchangeRate() {
   const [amount, setAmount] = useState("1.50");
   const [currencyCode, setCurrencyCode] = useState("USD");
   const [currencyData, setCurrencyData] = useState({ USD: 1.0 });
 
-  // fetch the exchange rates each time currency code changes
+  const classes = useStyles();
+
   useEffect(() => {
     getExchangeRates(currencyCode, supportedCurrencies).then((rates) => {
       setCurrencyData(rates);
@@ -29,23 +50,24 @@ export function ExchangeRate() {
   }, []);
 
   return (
-    <>
-      <section>
-        <h1 className="ExchangeRate-header">
-          Exchange Rates{" "}
-          <CurrencyCodePicker
-            supportedCurrencies={supportedCurrencies}
-            currencyCode={currencyCode}
-            onChange={handleCurrencyCode}
-          />
-        </h1>
-      </section>
-      <section>
+    <Container maxWidth="md">
+      <Box my={4}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          className={classes.exchangeRateHeader}
+        >
+          Exchange Rates
+        </Typography>
+        <CurrencyCodePicker
+          supportedCurrencies={supportedCurrencies}
+          currencyCode={currencyCode}
+          onChange={handleCurrencyCode}
+        />
         <AmountField amount={amount} onChange={handleAmountChange} />
-      </section>
-      <section>
         <RateTable currencyData={currencyData} amount={amount} />
-      </section>
-    </>
+      </Box>
+    </Container>
   );
 }
